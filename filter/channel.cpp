@@ -9,7 +9,7 @@ Channel::Channel()
       udemo[j] = 18+j*2;
      // Channel::status = 1;
     }
-     //status[1] = 0;
+
 
 }
 
