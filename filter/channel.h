@@ -13,7 +13,8 @@ class Channel:public QObject
     Q_OBJECT
 public:
     Channel();
-    NetInfo last;
+    ~Channel();
+    NetInfo controllerData;
    static uint status;
 
 protected:

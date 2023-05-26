@@ -2,49 +2,53 @@
 
 Channel::Channel()
 {
-    last.field=last.u=last.i=last.f=last.flags=last.err=last.shake=last.errshake=0;
-    udemo = new unsigned char[4];
+    udemo = new unsigned char[8];
 
-    for(int j=0; j<4; j++) {
-      udemo[j] = 18+j*2;
-     // Channel::status = 1;
-    }
-
+    for(int i=0; i<8; i++)
+        udemo[i] = 18+i%3;
 
 }
 
+Channel::~Channel()
+{
+    delete udemo;
+}
+
+
+// Controllers data files modeling
 void Channel::network() {
     for(int i = 0;; i++) {    // вечный цикл
         i%=50;
-        last.field=i/10 +1;
+        controllerData.field=i/10 +1;
         int j = i%10;
 
         if (j==1) {
             if(++udemo[i/10] > 48 + i/10 +rand()%15){
-                last.flags = 1;
+                controllerData.flags = 1;
                 udemo[i/10]-=3+rand()%9;
             }
             if(udemo[i/10]<20) udemo[i/10]=20;
-            last.flags &= 0x7f;
+            controllerData.flags &= 0x7f;
             if(!(Channel::status &(1 << i/10))) {
                 udemo[i/10]=7;
-                last.flags |= 0x80;
+                controllerData.flags |= 0x80;
             }
-            last.u = udemo[i/10];
+            controllerData.u = udemo[i/10];
 
         }
         if (j==2)
-            last.i = udemo[i/10]>18 ? udemo[i/10]*udemo[i/10]/(50-i/10) :0;
+            controllerData.i = udemo[i/10]>18 ? udemo[i/10]*udemo[i/10]/(50-i/10) :0;
 
         if (j==4) {
             if(rand()%5)
-                last.shake = 0;
-            else last.shake = 1;
+                controllerData.shake = 0;
+            else controllerData.shake = 1;
         }
 
+        // Data ready
         if (j==9) {
-            emit send(last);
-            last.flags &=0xfe;
+            emit send(controllerData);
+            controllerData.flags &=0xfe;
         }
 
         QThread::msleep(10);
