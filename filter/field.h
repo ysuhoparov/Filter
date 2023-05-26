@@ -22,6 +22,7 @@ public:
     void updateInfo(NetInfo&);
     void diagram(NetInfo&);
     void sendCommand();
+    void setPower(float);
 
     QFrame* frame;
 
@@ -48,7 +49,7 @@ private:
     QPushButton *start, *stop;
 
     int *diagramU, *diagramI;
-    unsigned int first, last, size;
+    unsigned int first, last;
     int count =10;
 
 //sizes
@@ -83,6 +84,8 @@ private:
     int shtop = 400;
     int vleft = 50;
     int vtop = 460;
+
+    unsigned int dsize = 180;  // points of diagram
 
 
 };

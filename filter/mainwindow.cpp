@@ -6,12 +6,17 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 {
     ui->setupUi(this);
 
-    fields = new Field*[4];
+    config = new Config();
 
-    for(int i =0; i <4; i++)
+    zones = config->getZones();
+
+    fields = new Field*[zones];
+
+    for(int i = 0; i < zones; i++) {
         fields[i] = new Field(this ,i);
+        fields[i]->setPower(config->getPower(i));
 
-    //count = 0;
+    }
 
     QThread *thread= new QThread;
     Channel *channel = new Channel();
@@ -26,13 +31,15 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete config;
 }
 
 void MainWindow::update(NetInfo data)
 {
-
-    fields[data.field-1]->updateInfo(data);
-    fields[data.field-1]->diagram(data);
+    if(data.field <= zones) {
+        fields[data.field-1]->updateInfo(data);
+        fields[data.field-1]->diagram(data);
+    }
 
 }
 
@@ -43,10 +50,10 @@ void MainWindow::on_pushButton_2_clicked()
 }
 
 
-void MainWindow::on_pushButton_clicked()
-{
-    ui->label_2->setText(QString::number(count++));
-    Channel::status =0;
+//void MainWindow::on_pushButton_clicked()
+//{
+//    ui->label_2->setText(QString::number(count++));
+//    Channel::status =0;
 
 //    QThread *threadcmd= new QThread;
 //    CmdChannel *cmdchannel = new CmdChannel(0x200);
@@ -55,7 +62,7 @@ void MainWindow::on_pushButton_clicked()
 //    connect(cmdchannel, SIGNAL(sendcmd(int)), this, SLOT(updatecmd(int)));
 //    connect(threadcmd, SIGNAL(started()), cmdchannel, SLOT(command()));
 //    threadcmd->start();;
-}
+//}
 
 void MainWindow::updatecmd(int qwer)
 {
@@ -66,7 +73,7 @@ void MainWindow::paintEvent(QPaintEvent *)
 {
     QPainter painter;
     painter.begin(this);
-    for(int i =0; i <4; i++) {
+    for(int i =0; i < zones; i++) {
         auto f = fields[i]->frame;
         painter.drawLine(f->x(), f->y()+f->height(), f->x()+80, f->y()+f->height() + 140);
         painter.drawLine(f->x()+f->width(), f->y()+f->height(),
@@ -78,7 +85,7 @@ void MainWindow::paintEvent(QPaintEvent *)
             painter.drawLine(f->x(), f->y()+f->height(), f->x()-100, f->y()+f->height()-180);
             painter.drawLine(f->x() - 100, f->y() +180, f->x() - 100, f->y()+f->height()-180);
         }
-        if(i == 3) {
+        if(i == zones-1) {
             painter.drawLine(f->x()+f->width(), f->y(), f->x()+f->width()+100, f->y() +180);
             painter.drawLine(f->x()+f->width(), f->y()+f->height(), f->x()+f->width()+100, f->y()+f->height()-180);
             painter.drawLine(f->x()+f->width()+100, f->y()+f->height()-180, f->x()+f->width()+100, f->y() +180);

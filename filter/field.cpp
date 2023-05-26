@@ -12,7 +12,6 @@ Field::Field(QWidget *parent, int numberField) : QMainWindow(parent) {
     }
 
     first=last=0;
-    size = 180; // point in diagram
 
     power = number > 1 ? 10 : 4;
     frame = new QFrame(parent);
@@ -113,13 +112,12 @@ void Field::diagram(NetInfo & data) {
     pen.setColor(0x9098f0);  //f05858
     pen.setWidth(2);
 
-    size = 180;
-    for(unsigned int j =1; j<size-2; j++ ) {
+    for(unsigned int j =1; j<dsize-2; j++ ) {
         pen.setColor(0x9098f0);  //f05858
-        sc->addLine((size -j), 1.8*diagramU[(last-j)%256]-89, (size -j-1), 1.8*diagramU[(last-j-1)%256]-89,pen);
+        sc->addLine((dsize -j), 1.8*diagramU[(last-j)%256]-89, (dsize -j-1), 1.8*diagramU[(last-j-1)%256]-89,pen);
 
         pen.setColor(0x20C0A0);  //f05858
-        sc->addLine((size -j), 88-0.9*diagramI[(last-j)%256], (size -j-1), 88-0.9*diagramI[(last-j-1)%256],pen);
+        sc->addLine((dsize -j), 88-0.9*diagramI[(last-j)%256], (dsize -j-1), 88-0.9*diagramI[(last-j-1)%256],pen);
     }
 
 }
@@ -136,5 +134,8 @@ void Field::on_stop_clicked()
     mode->setText(QString::number(Channel::status) );
 }
 
-
+void Field::setPower(float power)
+{
+    this->power = power/100;
+}
 

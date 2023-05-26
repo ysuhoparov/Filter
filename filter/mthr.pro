@@ -11,6 +11,7 @@ CONFIG += c++17
 SOURCES += \
     channel.cpp \
     cmdchannel.cpp \
+    config.cpp \
     field.cpp \
     main.cpp \
     mainwindow.cpp
@@ -18,6 +19,7 @@ SOURCES += \
 HEADERS += \
     channel.h \
     cmdchannel.h \
+    config.h \
     field.h \
     mainwindow.h \
     netInfo.h

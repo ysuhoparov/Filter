@@ -1,7 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
+
 #include "channel.h"
 #include "field.h"
+#include "config.h"
 
 #include <QMainWindow>
 
@@ -28,15 +30,18 @@ public:
 
 private slots:
     void update(NetInfo);
-    void on_pushButton_clicked();
-        void updatecmd(int);
+
+    void updatecmd(int);
 
     void on_pushButton_2_clicked();
 
 protected :
     Ui::MainWindow *ui;
     int count=0;
+    int zones = 4;
     Field **fields;
+    Config *config;
+
 
     void paintEvent(QPaintEvent*) override;
 

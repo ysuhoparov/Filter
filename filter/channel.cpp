@@ -15,7 +15,7 @@ Channel::Channel()
 
 void Channel::network() {
     for(int i = 0;; i++) {    // вечный цикл
-        i%=40;
+        i%=50;
         last.field=i/10 +1;
         int j = i%10;
 
@@ -34,7 +34,7 @@ void Channel::network() {
 
         }
         if (j==2)
-            last.i = udemo[i/10]>18 ? udemo[i/10]*udemo[i/10]/(40-i/10) :0;
+            last.i = udemo[i/10]>18 ? udemo[i/10]*udemo[i/10]/(50-i/10) :0;
 
         if (j==4) {
             if(rand()%5)
