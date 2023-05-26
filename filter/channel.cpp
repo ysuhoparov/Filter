@@ -27,8 +27,10 @@ void Channel::network() {
                 controllerData.flags = 1;
                 udemo[i/10]-=3+rand()%9;
             }
-            if(udemo[i/10]<20) udemo[i/10]=20;
-            controllerData.flags &= 0x7f;
+            if(udemo[i/10]<20) {
+                udemo[i/10]=20;
+                controllerData.flags &= 0x7f;
+            }
             if(!(Channel::status &(1 << i/10))) {
                 udemo[i/10]=7;
                 controllerData.flags |= 0x80;

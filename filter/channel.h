@@ -11,11 +11,12 @@
 class Channel:public QObject
 {
     Q_OBJECT
+
 public:
     Channel();
     ~Channel();
     NetInfo controllerData;
-   static uint status;
+    static uint status;
 
 protected:
     unsigned char *udemo;
