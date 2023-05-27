@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     fields = new Field*[zones];
 
     for(int i = 0; i < zones; i++) {
-        fields[i] = new Field(this ,i);
+        fields[i] = new Field(this , i, zones);
         fields[i]->setPower(config->getPower(i));
 
     }

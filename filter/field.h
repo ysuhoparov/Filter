@@ -17,7 +17,7 @@ class Field : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit Field(QWidget *parent, int numberField=0);
+    explicit Field(QWidget *parent, int numberField=0, int zones =4);
 
     void updateInfo(NetInfo&);
     void diagram(NetInfo&);

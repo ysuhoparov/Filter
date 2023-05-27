@@ -27,7 +27,6 @@ public:
     ~MainWindow();
 
 
-
 private slots:
     void update(NetInfo);
 

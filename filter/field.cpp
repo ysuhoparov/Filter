@@ -1,7 +1,7 @@
 
 #include "field.h"
 
-Field::Field(QWidget *parent, int numberField) : QMainWindow(parent) {
+Field::Field(QWidget *parent, int numberField, int zones) : QMainWindow(parent) {
     number = numberField;
 
     diagramU = new int[256];
@@ -10,8 +10,9 @@ Field::Field(QWidget *parent, int numberField) : QMainWindow(parent) {
         diagramI[j]=0;
         diagramU[j]=0;
     }
-
     first=last=0;
+
+    if(zones > 4) left = 150;
 
     power = number > 1 ? 10 : 4;
     frame = new QFrame(parent);
