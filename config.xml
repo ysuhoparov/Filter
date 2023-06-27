@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <config>
 
-	<zones>5</zones>
+	<zones>4</zones>
+	<name> печи обжига № 7.1 </name>
 
 	<power>
 		<p1> 250  </p1>

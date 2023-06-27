@@ -18,14 +18,16 @@ Channel::~Channel()
 // Controllers data files modeling
 void Channel::network() {
     for(int i = 0;; i++) {    // вечный цикл
-        i%=50;
+        i%=40;
         controllerData.field=i/10 +1;
-        int j = i%10;
+        int j = i%10; 
 
         if (j==1) {
+            if(udemo[i/10] > 40)
+                if(rand()%5) --udemo[i/10];
             if(++udemo[i/10] > 48 + i/10 +rand()%15){
                 controllerData.flags = 1;
-                udemo[i/10]-=3+rand()%9;
+                udemo[i/10]-=3+rand()%(9-j);
             }
             if(udemo[i/10]<20) {
                 udemo[i/10]=20;
@@ -39,16 +41,20 @@ void Channel::network() {
 
         }
         if (j==2)
-            controllerData.i = udemo[i/10]>18 ? udemo[i/10]*udemo[i/10]/(50-i/10) :0;
+            controllerData.i = udemo[i/10]>18 ? udemo[i/10]*udemo[i/10]/(40-i/10) :0;
 
         if (j==4) {
-            if(rand()%5)
+            if(rand()%7) {
                 controllerData.shake = 0;
-            else controllerData.shake = 1;
+                controllerData.errshake =0;
+            }
+            else
+                controllerData.shake = 1;
         }
 
         // Data ready
         if (j==9) {
+            controllerData.err = 0;
             emit send(controllerData);
             controllerData.flags &=0xfe;
         }

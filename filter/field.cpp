@@ -1,4 +1,3 @@
-
 #include "field.h"
 
 Field::Field(QWidget *parent, int numberField, int zones) : QMainWindow(parent) {
@@ -7,33 +6,32 @@ Field::Field(QWidget *parent, int numberField, int zones) : QMainWindow(parent) 
     diagramU = new int[256];
     diagramI = new int[256];
     for(int j=0; j < 256; j++) {
-        diagramI[j]=0;
-        diagramU[j]=0;
+        diagramI[j] = diagramU[j] = 0;
     }
     first=last=0;
 
     if(zones > 4) left = 150;
 
-    power = number > 1 ? 10 : 4;
     frame = new QFrame(parent);
-
     frame->setFrameShape(QFrame::Panel);
     frame->resize(width,height);
     frame->move(left + next*number, top);
-    int fontSize = 12;
-    QFont font( "Tahoma", fontSize);
+
     graph = new QGraphicsView(frame);
     graph->resize(gsize, gsize);
     graph->move(gleft, gtop);
 
     sc = new QGraphicsScene();
-        graph->setScene(sc);
+    graph->setScene(sc);
+
+    sdigit(frame);
 
     pbU = new QProgressBar(frame);
         pbU->setGeometry(QRect(QPoint(pleft, putop), QSize(pwidth, pheight)));
         pbU->setTextVisible(false);
         pbU->setStyleSheet("QProgressBar::chunk{background-color: #9098f0; width: 1px; }");
-
+    QFont font( "Tahoma", 8);
+    font.setPointSize(12);
     valU = new QLabel(" U =               kV", frame);
         valU->setFont(font);
         valU->move(uleft, utop);
@@ -72,63 +70,63 @@ Field::Field(QWidget *parent, int numberField, int zones) : QMainWindow(parent) 
         connect(stop, &QPushButton::released, this, &Field::on_stop_clicked);
 }
 
-void Field::updateInfo(NetInfo &inf) {
-    pbU->setValue(inf.u);
-    valU->setText("U" + QString::number(number+1) +" = " + QString::number(inf.u) + "kV");
+void Field::updateInfo() {
+    pbU->setValue(data.u);
+    valU->setText("U" + QString::number(number+1) +" = " + QString::number(data.u) + "kV");
 
-    pbI->setValue(inf.i);
-    valI->setText("I" + QString::number(number+1) +" = " + QString::number(inf.i*power) + "mA");
+    pbI->setValue(data.i);
+    valI->setText("I" + QString::number(number+1) +" = " + QString::number(data.i*power) + "mA");
 
-    if(inf.flags & 1) mode->setText("Искра");
+    if(data.flags & 1) mode->setText("Искра");
         else mode->setText("Авто");
-    if(inf.flags & 0x80) mode->setText("Стоп");
+    if(data.flags & 0x80) mode->setText("Стоп");
 
-
-
-    if(inf.shake){
+    if(data.shake){
         shaking->setText("Встряхивание");
         vibr->setText("~~~~");
     }
     else {
-        shaking->setText(""); vibr->setText("");
+        shaking->setText("");
+        vibr->setText("");
     }
 
+    diagram();
 }
 
-void Field::diagram(NetInfo & data) {
+// Отрисовка диаграмм тока и напряжения электрофильтра
+void Field::diagram() {
+    diagramU[last] = data.u < 99 ? data.u : 98;  // Новые значения
+    diagramI[last] = data.i < 99 ? data.i : 98;  // -1 на толщину линии
 
-    diagramU[last] = data.u;
-    diagramI[last] = data.i;
-
-    last=(++last)%256;
-    //if(!last) first =1;
+    last=(++last)%256;   // Подготовка следующего индекса
+    // Прорисовка сетки
     sc->clear();
     pen.setColor(0xe0e0e0);
     pen.setWidth(1);
+    for(int j=0; j <8; j++)
+        sc->addLine(j*dt+gd, -dh, j*dt+gd, dh, pen);  //
     for(int j=1; j <10; j++)
-        sc->addLine(j*18, -89, j*18, 89, pen);  // 186*182
-    for(int j=1; j <10; j++)
-        sc->addLine(1, -90+18*j, 179,-90+18*j, pen);
+        sc->addLine(1, -dh-1+dm*j, 179,-dh-1+dm*j, pen);
 
-    pen.setColor(0x9098f0);  //f05858
-    pen.setWidth(2);
+    // Построение графиков, U-двойной толщины
+    for(unsigned int j = gd*2; j<dsize-gd; j++ ) {
+        pen.setWidth(1);
+        pen.setColor(0x20C0A0);  // Цвет I
+        sc->addLine((dsize -j), dh-dmi*diagramI[(last-j)%256], (dsize -j-1), dh-dmi*diagramI[(last-j-1)%256],pen);
+        pen.setWidth(2);
+        pen.setColor(0x9098f0);  // Цвет U
+        sc->addLine((dsize -j), dmu*diagramU[(last-j)%256]-dh, (dsize -j-1), dmu*diagramU[(last-j-1)%256]-dh,pen);
 
-    for(unsigned int j =1; j<dsize-2; j++ ) {
-        pen.setColor(0x9098f0);  //f05858
-        sc->addLine((dsize -j), 1.8*diagramU[(last-j)%256]-89, (dsize -j-1), 1.8*diagramU[(last-j-1)%256]-89,pen);
-
-        pen.setColor(0x20C0A0);  //f05858
-        sc->addLine((dsize -j), 88-0.9*diagramI[(last-j)%256], (dsize -j-1), 88-0.9*diagramI[(last-j-1)%256],pen);
     }
-
 }
 
+// Нажатие Пуск
 void Field::on_start_clicked()
 {
     Channel::status |= 1 << number;
     mode->setText(QString::number(Channel::status) );
 }
-
+// Нажатие Стоп
 void Field::on_stop_clicked()
 {
     Channel::status &= 0xf ^ 1 << number;
@@ -140,3 +138,31 @@ void Field::setPower(float power)
     this->power = power/100;
 }
 
+void Field::sdigit(QFrame* frame)
+{
+    QFont font( "Tahoma", 8);
+
+    diaglbl = new QLabel("-60   50    40   30    20    10 c", frame);
+    diaglbl->setFont(font);
+    diaglbl->move(glbleft, glbltop);
+
+    du20 = new QLabel("20", frame);
+    du20->setFont(font);
+    du20->move(duleft, d20top);
+    du50 = new QLabel("50", frame);
+    du50->setFont(font);
+    du50->move(duleft, d50top);
+    du80 = new QLabel("80kV", frame);
+    du80->setFont(font);
+    du80->move(duleft, d80top);
+
+    di80 = new QLabel("80%", frame);
+    di80->setFont(font);
+    di80->move(dileft-10, d20top);
+    di50 = new QLabel("50", frame);
+    di50->setFont(font);
+    di50->move(dileft, d50top);
+    di20 = new QLabel("20", frame);
+    di20->setFont(font);
+    di20->move(dileft, d80top);
+}

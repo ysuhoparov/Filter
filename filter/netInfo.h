@@ -1,6 +1,7 @@
 #ifndef NETINFO_H
 #define NETINFO_H
 
+// Данные канала
 class NetInfo
 {
 public:

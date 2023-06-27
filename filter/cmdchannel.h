@@ -4,7 +4,7 @@
 
 #include "channel.h"
 
-
+//alternative command
 
 class CmdChannel : public Channel
 {

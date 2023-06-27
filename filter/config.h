@@ -5,9 +5,6 @@
 #include <QMainWindow>
 #include <QXmlStreamReader>
 
-
-
-
 class Config
 {
     int zones;
@@ -17,6 +14,8 @@ public:
     Config();
     int getZones() const ;
     int getPower(int) const ;
+    QString name;
+    bool success;
 
 };
 
