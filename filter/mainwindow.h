@@ -32,6 +32,9 @@ class QLabel;
 class QMenu;
 QT_END_NAMESPACE
 
+//class DateDialog;
+//#include "datedialog.h"
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -40,7 +43,10 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+
     Ui::MainWindow *ui;
+
+
     int count=0;
     int zones = 4;
     Field **fields;
@@ -49,6 +55,7 @@ public:
     void paintEvent(QPaintEvent*) override;
 
 private slots:
+    void select();
     void parameters();
     void service();
     void save();
@@ -66,6 +73,7 @@ private:
     QMenu *reportMenu;
     QMenu *helpMenu;
 
+    QAction *selectAct;
     QAction *paramAct;
     QAction *serviceAct;
     QAction *saveAct;

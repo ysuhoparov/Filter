@@ -2,6 +2,7 @@
 #include "dataconversion.h"
 #include "report.h"
 #include "ui_mainwindow.h"
+#include "datedialog.h"
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -30,17 +31,24 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     createActions();
     createMenus();
 
-    if(config->success)
-        statusBar()->showMessage("Config file wrong - Demo mode");
+    //dateDialog = new DateDialog(this);
 
 // Подключение к СуБД
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setHostName("localhost");
+    db.setHostName("localhost1");
     db.setDatabaseName("db.sqlite3");
     db.setUserName("");
     db.setPassword("");
 
     if(db.open()) statusBar()->showMessage("Db is open");
+
+
+    QSqlQuery query2("SELECT * FROM history limit 4");
+    while (query2.next()) {
+        qWarning() << query2.value(0).toString();
+        qWarning() << query2.value(2).toLongLong();
+    }
+    qDebug() << query2.lastError().text();
 
     if(!config->success)
         statusBar()->showMessage("Config file wrong - Demo mode");
@@ -98,6 +106,14 @@ void MainWindow::paintEvent(QPaintEvent *)
         }
     }
     painter.end();
+}
+
+void MainWindow::select()
+{
+    DateDialog *dateDialog = new DateDialog(this);
+    dateDialog->show();
+    dateDialog->activateWindow();
+
 }
 
 void MainWindow::parameters()
@@ -170,9 +186,14 @@ void MainWindow::about(){
 
 void MainWindow::createActions()
 {
-    paramAct = new QAction(tr("&Параметры питания"), this);
+    selectAct = new QAction(tr("&Параметры питания"), this);
+    selectAct->setShortcuts(QKeySequence::AddTab);   // CtrT
+    selectAct->setStatusTip(tr("Параметры питания за выбранное время"));
+    connect(selectAct, &QAction::triggered, this, &MainWindow::select);
+
+    paramAct = new QAction(tr("&Текущие параметры питания"), this);
     paramAct->setShortcuts(QKeySequence::Underline);   // CtrlU
-    paramAct->setStatusTip(tr("Параметры питания полей фильтра"));
+    paramAct->setStatusTip(tr("Текущие параметры питания фильтра"));
     connect(paramAct, &QAction::triggered, this, &MainWindow::parameters);
 
     serviceAct = new QAction(tr("&Обслуживание"), this);
@@ -207,6 +228,7 @@ void MainWindow::createActions()
 void MainWindow::createMenus()
 {
     reportMenu = menuBar()->addMenu(tr("&Отчеты"));
+    reportMenu->addAction(selectAct);
     reportMenu->addAction(paramAct);
     reportMenu->addAction(serviceAct);
     reportMenu->addAction(saveAct);
@@ -245,6 +267,7 @@ void MainWindow::update(NetInfo data)
             query.exec();
             if(query.lastError().text()!="")
                 statusBar()->showMessage(query.lastError().text());
+
         }
     }
 }

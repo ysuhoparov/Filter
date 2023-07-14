@@ -13,6 +13,7 @@ SOURCES += \
     cmdchannel.cpp \
     config.cpp \
     dataconversion.cpp \
+    datedialog.cpp \
     field.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -23,6 +24,7 @@ HEADERS += \
     cmdchannel.h \
     config.h \
     dataconversion.h \
+    datedialog.h \
     field.h \
     netinfo.h \
     mainwindow.h \
@@ -30,6 +32,7 @@ HEADERS += \
 	
 
 FORMS += \
+    datedialog.ui \
     mainwindow.ui
 
 # Default rules for deployment.

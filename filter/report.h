@@ -3,7 +3,10 @@
 
 #include <QObject>
 
+#include <QDateTime>
 #include <QSqlQueryModel>
+#include <QSqlQuery>
+
 
 class Report : public QObject
 {
@@ -12,6 +15,7 @@ public:
     explicit Report(QObject *parent = nullptr);
 
     static void parameters();
+    static void parameters(const QDateTime&);
     static void service();
 
 
